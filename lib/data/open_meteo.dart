@@ -43,13 +43,22 @@ class ModelForecast {
 }
 
 /// The compare card's model lineup (docs/contracts/weather-compare.md).
-/// icon_global is discontinued 2026-11-30 per the live docs page; the native
-/// replacement id is pending a live CI receipt (HYA-456) and may show MISSING.
+///
+/// Ids are pinned from the Open-Meteo OpenAPI spec
+/// (open-meteo/open-meteo@b485547, openapi/forecast.yml \`models\` enum,
+/// fetched 2026-11-13). Receipts that corrected earlier guesses:
+/// - \`aifs025\` is NOT an id — the enum has \`ecmwf_aifs025_single\`;
+/// - \`gfs_seamless\` is NOT an id — the enum has \`ncep_gfs_seamless\`;
+/// - \`icon_global_native\` is NOT in the enum — \`icon_global\` is
+///   discontinued 2026-11-30 per the live docs page, so \`icon_seamless\`
+///   (which follows DWD's native global successor) is the pinned choice.
+/// A wrong id would 400 forever as a MISSING column — ids change only with a
+/// receipt, never a guess.
 const List<({String id, String label})> compareModels = [
   (id: 'ecmwf_ifs025', label: 'IFS 0.25°'),
-  (id: 'aifs025', label: 'AIFS 0.25°'),
-  (id: 'icon_global_native', label: 'ICON Native'),
-  (id: 'gfs_seamless', label: 'GFS'),
+  (id: 'ecmwf_aifs025_single', label: 'AIFS 0.25°'),
+  (id: 'icon_seamless', label: 'ICON Seamless'),
+  (id: 'ncep_gfs_seamless', label: 'GFS Seamless'),
 ];
 
 /// Parses one single-model daily response. Every malformed shape becomes an
