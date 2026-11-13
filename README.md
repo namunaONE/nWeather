@@ -41,12 +41,28 @@ the app calls CORS-enabled APIs (Open-Meteo, USGS, EMSC) directly from the brows
 The pipeline is: **ingest → verify → snapshot → deliver → label**. See
 [docs/methodology.md](docs/methodology.md).
 
+## Run it locally
+
+```bash
+flutter pub get
+flutter run -d chrome
+```
+
+CI runs analyze / test / web build on every push and PR.
+
+## For developers
+
+nWeather is built to be built upon: reusable sibling packages, a planned
+versioned open snapshot API, and strict attribution rules. See
+[docs/developers.md](docs/developers.md).
+
 ## Repo layout
 
-- `docs/` — the durable spec: source research and methodology. Linear
-  ([project P-HYA-15](https://linear.app/hyamuji/project/nweather)) stays the tracker;
-  this repo carries the knowledge.
-- `.github/workflows/` — CI scaffold (analyze / test / build), gate philosophy from day one.
+- `lib/` — the Flutter app (web-first; bento grid, honesty labels on every tile).
+- `docs/` — the durable spec: source research, methodology, and the developer guide.
+  Linear ([project P-HYA-15](https://linear.app/hyamuji/project/nweather)) stays the
+  tracker; this repo carries the knowledge.
+- `.github/workflows/` — CI (analyze / test / build), gate philosophy from day one.
 
 ## License
 

@@ -1,0 +1,35 @@
+name: nweather
+description: nWeather — Nepal-only weather and hazard channel. Two truths, never averaged.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  http: ^1.2.2
+  nepal_admin_api:
+    git:
+      url: https://github.com/namunaONE/nGeo.git
+      ref: main
+  nepali_date:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date
+      ref: main
+  nepali_date_data:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date_data
+      ref: main
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

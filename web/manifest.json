@@ -1,0 +1,10 @@
+{
+  "name": "nWeather",
+  "short_name": "nWeather",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0e1116",
+  "theme_color": "#0e1116",
+  "description": "Nepal weather and hazards — official words vs model numbers, never averaged.",
+  "lang": "en"
+}
