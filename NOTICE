@@ -1,0 +1,44 @@
+THIRD-PARTY DATA ATTRIBUTION
+
+The app's own code is MIT-licensed (see LICENSE). Some data consumed or
+redistributed by nWeather is third-party material under Creative Commons or
+other attribution licenses. This file satisfies the attribution requirement
+(credit + license link + adaptation note). Per-source provenance, including
+retrieval dates, lives in docs/sources.md and in the /cache/*.json snapshots
+themselves (every snapshot carries source, issued-at/run time, and data age).
+
+1. Open-Meteo (forecast, ensemble, flood/GloFAS, air quality, historical runs)
+   Source:  https://open-meteo.com/ (CC-BY-4.0 terms for non-commercial use)
+   License: Creative Commons Attribution 4.0 International (CC-BY-4.0),
+            https://creativecommons.org/licenses/by/4.0/
+   Used for: point model guidance (IFS/AIFS, ICON, GFS and comparators),
+   rainfall ensembles, GloFAS river discharge, CAMS air quality, and
+   previous-run history for the model skill scoreboard.
+   Attribution is mandatory and shown on every model-derived tile; model
+   values are never captioned as an official (DHM/BIPAD) statement.
+   No key, non-commercial use only.
+
+2. Nepal administrative data (via nGeo)
+   The place picker consumes nGeo (MIT code + CC-BY-4.0 data fields).
+   nGeo's own NOTICE covers open-admin-data coordinates and the CBS/Open Data
+   Nepal hierarchical codes; nWeather inherits those terms through nGeo and
+   does not relicense any of it.
+
+3. USGS Earthquake Hazards Program (FDSN)
+   Source:  https://earthquake.usgs.gov/fdsnws/
+   License: U.S. Government public domain (attribution appreciated).
+   Used for: earthquake events in the Nepal box. Never edited; shown with
+   event time, magnitude and depth as reported.
+
+4. EMSC (European-Mediterranean Seismological Centre)
+   Source:  https://www.seismicportal.eu/ (fdsnws-event)
+   License: EMSC data — attribution required, https://www.emsc-csem.org/
+   Used for: second earthquake source; USGS/EMSC events are matched
+   (<=60 s and <=30 km) and BOTH magnitudes are shown when they disagree.
+
+Official Nepali sources (DHM/NMD bulletins and getAPIData feeds, BIPAD alerts,
+hydrology river/rain gauges) are consumed as live government publications for
+public information. They are not redistributed under a license of ours: the
+/cache/*.json snapshots carry verbatim official text or measurements with
+provenance and age, fail-closed, and are never presented as nWeather's own
+forecast. Any snapshot failing its quality gate is dropped, not published.

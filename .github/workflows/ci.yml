@@ -1,0 +1,62 @@
+# nWeather CI scaffold (HYA-452). Gate philosophy from day one (nMiti-style):
+# analyze -> test -> build, warnings are errors. The Flutter steps are skipped
+# until pubspec.yaml exists, so CI is green from the first commit.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flutter:
+    name: analyze / test / build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for Flutter project
+        id: has_flutter
+        run: echo "present=$([ -f pubspec.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        if: steps.has_flutter.outputs.present == 'true'
+        with:
+          channel: stable
+          cache: true
+
+      - name: flutter pub get
+        if: steps.has_flutter.outputs.present == 'true'
+        run: flutter pub get
+
+      - name: flutter analyze (fatal-infos)
+        if: steps.has_flutter.outputs.present == 'true'
+        run: flutter analyze --fatal-infos
+
+      - name: flutter test
+        if: steps.has_flutter.outputs.present == 'true'
+        run: flutter test
+
+      - name: Build APK artifact
+        if: steps.has_flutter.outputs.present == 'true'
+        run: flutter build apk --debug
+
+      - uses: actions/upload-artifact@v4
+        if: steps.has_flutter.outputs.present == 'true'
+        with:
+          name: app-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
+  docs:
+    name: docs links exist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docs referenced from README exist
+        run: |
+          test -f docs/sources.md
+          test -f docs/methodology.md
+          test -f LICENSE
+          test -f NOTICE
