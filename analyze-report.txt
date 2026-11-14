@@ -1,0 +1,7 @@
+Analyzing nWeather...                                           
+
+   info • Unnecessary braces in a string interpolation. Try removing the braces • lib/data/air_quality.dart:109:55 • unnecessary_brace_in_string_interps
+warning • The generic type 'List<dynamic>' should have explicit type arguments but doesn't. Use explicit type arguments for 'List<dynamic>' • lib/data/air_quality.dart:117:57 • strict_raw_type
+   info • Use the generic function type syntax to declare the parameter 'pick'. Try using the generic function type syntax • lib/data/air_quality.dart:206:36 • use_function_type_syntax_for_parameters
+
+3 issues found. (ran in 7.1s)
