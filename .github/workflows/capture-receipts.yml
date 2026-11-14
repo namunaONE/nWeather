@@ -25,8 +25,8 @@ jobs:
         run: |
           set -x
           exec > >(tee /tmp/step-capture.log) 2>&1
-          if [ -f receipts/hya-409/hydrology-bundle-urls.txt ]; then
-            echo 'round 2 already captured; skipping'
+          if [ -f receipts/hya-409/hydrology-round3.txt ]; then
+            echo 'round 3 already captured; skipping'
             exit 0
           fi
           UA='nWeather receipt capture (github.com/namunaONE/nWeather)'
@@ -48,9 +48,16 @@ jobs:
             -o /tmp/receipts/hydrology-main-bundle.js -w 'hydrology-bundle HTTP %{http_code}\n' || true
           grep -oE 'https?://[^"'"'"' )]{5,140}' /tmp/receipts/hydrology-main-bundle.js 2>/dev/null | sort -u | head -80 > /tmp/receipts/hydrology-bundle-urls.txt || true
           grep -oE '"/[a-zA-Z0-9_/.-]{2,80}"' /tmp/receipts/hydrology-main-bundle.js 2>/dev/null | sort -u | head -80 > /tmp/receipts/hydrology-bundle-paths.txt || true
+          {
+            echo '== round 3 probes (2026-11-14) =='
+            for u in 'https://hydrology.gov.np/current_forecast' 'https://hydrology.gov.np/api-public/' 'https://hydrology.gov.np/river_watch' 'https://hydrology.gov.np/gss/api'; do
+              code=$(curl -sS -A "$UA" -L -o "/tmp/receipts/r3_$(echo $u | md5sum | cut -c1-8).body" -w '%{http_code}' "$u" || echo ERR)
+              echo "$u -> HTTP $code"
+            done
+          } | tee /tmp/receipts/hydrology-round3.txt
           cp /tmp/receipts/* .
           mkdir -p receipts/hya-409
-          mv -n flood-*.json hydrology-*.html hydrology-links.txt hydrology-bundle-urls.txt hydrology-bundle-paths.txt receipts/hya-409/ 2>/dev/null || true
+          mv -n flood-*.json hydrology-*.html hydrology-links.txt hydrology-bundle-urls.txt hydrology-bundle-paths.txt hydrology-round3.txt r3_*.body receipts/hya-409/ 2>/dev/null || true
           git config user.name 'nWeather receipt bot'
           git config user.email 'receipts@namunaone.invalid'
           git add receipts/hya-409
