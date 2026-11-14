@@ -89,7 +89,9 @@ void main() {
 
     test('every unmatched EMSC event keeps its own row', () {
       final emscRows = matches.where((m) => m.emsc != null).length;
-      expect(emscRows, 4 + 31);
+      // All 32 EMSC events appear in exactly one row: the 4 matched pairs
+      // plus 28 single-source rows — none dropped, none duplicated.
+      expect(emscRows, 4 + 28);
     });
   });
 
