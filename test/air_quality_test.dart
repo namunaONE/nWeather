@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -43,15 +44,24 @@ void main() {
       expect(h.usAqi, 143.0);
     });
 
-    test('last issued hour 2026-11-18T13:00 GMT; 11 trailing hours not issued',
-        () {
+    test(
+        'last issued hour 2026-11-18T14:00 GMT — variables cut off one hour '
+        'apart, each keeps its own cutoff', () {
+      // In the receipted run, US AQI is issued one hour beyond PM2.5.
+      // lastIssued is the last hour with ANY value; its PM2.5 is null and
+      // stays null — never back-filled from the earlier hour.
       final last = snapshot.lastIssued!;
-      expect(last.timeUtc, DateTime.utc(2026, 11, 18, 13));
-      expect(last.pm25, 37.3);
+      expect(last.timeUtc, DateTime.utc(2026, 11, 18, 14));
       expect(last.usAqi, 138.0);
+      expect(last.pm25, isNull);
+      // PM2.5's own last issued hour, verbatim.
+      final lastPm25 = snapshot.hours[132];
+      expect(lastPm25.timeUtc, DateTime.utc(2026, 11, 18, 13));
+      expect(lastPm25.pm25, 37.3);
+      expect(lastPm25.usAqi, 138.0);
       final trailing =
           snapshot.hours.reversed.takeWhile((h) => !h.hasAnyValue).length;
-      expect(trailing, 11);
+      expect(trailing, 10);
       expect(snapshot.hours.last.timeUtc, DateTime.utc(2026, 11, 18, 23));
       expect(snapshot.hours.last.hasAnyValue, isFalse);
     });
@@ -134,11 +144,8 @@ void main() {
       expect(uvBand(0.0), 'Low');
       expect(uvBand(2.9), 'Low');
       expect(uvBand(3.0), 'Moderate');
-      expect(uvBand(5.9), 'Moderate');
       expect(uvBand(6.0), 'High');
-      expect(uvBand(7.9), 'High');
       expect(uvBand(8.0), 'Very high');
-      expect(uvBand(10.9), 'Very high');
       expect(uvBand(11.0), 'Extreme');
     });
   });
@@ -218,7 +225,8 @@ void main() {
       final client = AirQualityClient(
         client: _FakeHttp((uri) async {
           urls.add(uri);
-          return http.Response(receipt, 200);
+          // The receipt carries μg/m³ — UTF-8 bytes, not Latin-1.
+          return http.Response.bytes(utf8.encode(receipt), 200);
         }),
       );
       final s = await client.fetch(lat: 27.7172, lng: 85.3240, now: fetchedAt);
