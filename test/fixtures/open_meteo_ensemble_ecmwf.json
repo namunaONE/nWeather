@@ -1,0 +1,18 @@
+{
+  "_provenance": "SCHEMA-DERIVED fixture for parser tests only (docs/contracts/rainfall-ensemble.md). Not a live receipt. Synthetic 2-member x 3-day body exercising member derivation, null gaps and stats. Replace with a CI-crawled live receipt when HYA-455/456 land - nothing is remembered into a fixture.",
+  "latitude": 27.7172,
+  "longitude": 85.324,
+  "generationtime_ms": 1.1,
+  "utc_offset_seconds": 20700,
+  "timezone": "Asia/Kathmandu",
+  "timezone_abbreviation": "+0545",
+  "elevation": 1300.0,
+  "daily_units": {
+    "time": "iso8601",
+    "precipitation_sum": "mm"
+  },
+  "daily": {
+    "time": ["2026-11-13", "2026-11-14", "2026-11-15"],
+    "precipitation_sum": [0.0, 1.2, 8.4, 0.6, 4.0, 22.1]
+  }
+}
