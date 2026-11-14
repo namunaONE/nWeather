@@ -1,0 +1,5 @@
+== round 3 probes (2026-11-14) ==
+https://hydrology.gov.np/current_forecast -> HTTP 404
+https://hydrology.gov.np/api-public/ -> HTTP 404
+https://hydrology.gov.np/river_watch -> HTTP 502
+https://hydrology.gov.np/gss/api -> HTTP 404
