@@ -1,0 +1,31 @@
+[
+  {
+    "issue_date": "2026-11-13T12:15:00.000Z",
+    "id": "1663",
+    "title": "आगामी पाँच दिनको मौसम पूर्वानुमान (२०८३ कार्तिक २७ देखि २०८३ मंसिर १) जारी समय: साँझ १८:०० बजे",
+    "description": null,
+    "status": "1",
+    "images": [
+      "forecast-images/2026/11/13/day_1_1794572261659.png",
+      "forecast-images/2026/11/13/day_2_1794572263818.png",
+      "forecast-images/2026/11/13/day_2_1794572265972.png",
+      "forecast-images/2026/11/13/day_3_1794572268152.png",
+      "forecast-images/2026/11/13/day_3_1794572270291.png"
+    ]
+  },
+  {
+    "issue_date": "2026-11-13T02:15:00.000Z",
+    "id": "1662",
+    "title": "आगामी पाँच दिनको मौसम पूर्वानुमान (जारी मितिः २०८३ कार्तिक २७ गते बिहान ०८:०० बजे)",
+    "description": null,
+    "status": "1",
+    "images": [
+      "forecast-images/2026/11/13/day_1_1794536377856.png",
+      "forecast-images/2026/11/13/day_1_1794536380047.png",
+      "forecast-images/2026/11/13/day_2_1794536382212.png",
+      "forecast-images/2026/11/13/day_2_1794536384423.png",
+      "forecast-images/2026/11/13/day_3_1794536386557.png",
+      "forecast-images/2026/11/13/day_3_1794536388722.png"
+    ]
+  }
+]
