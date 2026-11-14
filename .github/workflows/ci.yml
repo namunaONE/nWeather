@@ -29,7 +29,7 @@ jobs:
         run: set -o pipefail; flutter analyze --fatal-infos
 
       - name: flutter test
-        run: set -o pipefail; flutter test --reporter github 2>&1 | tee /tmp/test.log; s=$?; tail -80 /tmp/test.log >> "$GITHUB_STEP_SUMMARY" || true; exit $s
+        run: set -o pipefail; flutter test --reporter github
 
       # Project page: namunaone.github.io/nWeather/ — the base href must
       # match the repo path or every asset 404s under the subpath.
