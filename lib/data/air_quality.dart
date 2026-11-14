@@ -106,7 +106,7 @@ DateTime parseGmtHour(String raw) {
     throw ArgumentError('air quality: empty time');
   }
   final hasZone = s.endsWith('Z') || RegExp(r'[+-]\d{2}:?\d{2}$').hasMatch(s);
-  final normalized = hasZone ? s : (s.length == 16 ? '${s}:00Z' : '${s}Z');
+  final normalized = hasZone ? s : (s.length == 16 ? '$s:00Z' : '${s}Z');
   try {
     return DateTime.parse(normalized).toUtc();
   } catch (e) {
@@ -114,7 +114,8 @@ DateTime parseGmtHour(String raw) {
   }
 }
 
-double? _numAt(Map<String, dynamic> hourly, String key, List times, int i) {
+double? _numAt(
+    Map<String, dynamic> hourly, String key, List<dynamic> times, int i) {
   final raw = hourly[key];
   if (raw is! List) {
     throw ArgumentError('air quality: hourly.$key is not a list');
@@ -203,7 +204,7 @@ String nptDateLabel(DateTime utc) {
   return '$y-$m-$d';
 }
 
-double? _maxOf(List<AirHour> list, double? pick(AirHour h)) {
+double? _maxOf(List<AirHour> list, double? Function(AirHour h) pick) {
   double? best;
   for (final h in list) {
     final v = pick(h);
