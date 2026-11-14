@@ -1,0 +1,51 @@
+# HYA-454 — hourly DHM official-snapshot refresh. The parser lives here
+# (CI), not on-device: gate failure = red run, NO snapshot written, the
+# previous snapshot stays served. Fail-closed.
+name: cache-dhm
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  fetch:
+    name: fetch + gate + commit snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: flutter pub get
+        run: set -o pipefail; flutter pub get
+
+      - name: fetch + normalize DHM snapshot
+        run: set -o pipefail; dart run tool/fetch_dhm.dart
+
+      - name: commit snapshot if changed
+        run: |
+          git config user.email "ci@namunaone.invalid"
+          git config user.name "nWeather cache bot"
+          if [ -n "$(git status --porcelain cache)" ]; then
+            git add cache
+            git commit -m "cache: dhm-official snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          else
+            echo "snapshot unchanged"
+          fi
+
+      # GITHUB_TOKEN pushes never trigger on:push workflows, so the Pages
+      # redeploy (ci.yml deploy-pages on main) is dispatched explicitly.
+      - name: redeploy site
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref main

@@ -35,6 +35,15 @@ jobs:
       - name: flutter build web
         run: set -o pipefail; flutter build web --release --base-href "/nWeather/"
 
+      # Official snapshots (HYA-454) ship inside the web bundle, same-origin,
+      # so the app reads cache/dhm-official.json with no cross-origin trust.
+      - name: stage cache/ into web bundle
+        run: |
+          if [ -d cache ]; then
+            mkdir -p build/web/cache
+            cp -r cache/. build/web/cache/
+          fi
+
       # Uploaded only from main; PRs stop at the build gate.
       - uses: actions/upload-pages-artifact@v3
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
