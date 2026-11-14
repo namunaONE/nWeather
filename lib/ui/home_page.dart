@@ -9,11 +9,13 @@ import 'flood_card.dart';
 import 'official_strip.dart';
 import 'panel_frame.dart';
 import 'place_picker.dart';
+import 'quake_card.dart';
 import 'rainfall_card.dart';
 
 /// The bento-grid home. Mobile stacks in strict priority order
 /// (hazard -> official -> now/48h -> rest, HYA-460); today: date, official
-/// DHM strip, place, compare card, rainfall card, flood panel, roadmap.
+/// DHM strip, place, compare card, rainfall card, flood panel, earthquake
+/// panel, roadmap.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -82,12 +84,15 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const FloodSection(),
                 const SizedBox(height: 12),
+                const QuakeSection(),
+                const SizedBox(height: 12),
                 const PanelFrame(
                   title: 'Coming next — contract-first, no fake data',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Text('• Air quality panel (HYA-411)'),
                       Text('• /cache/*.json snapshots served same-origin by '
                           'Pages (HYA-412)'),
                     ],
