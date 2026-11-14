@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:nweather/data/flood_glofas.dart';
 
 void main() {
@@ -53,7 +54,7 @@ void main() {
     });
 
     test('column length mismatch throws ArgumentError', () {
-      final bad = fixture.replaceFirst(',0.08,', ',', );
+      final bad = fixture.replaceFirst(',0.08,', ',');
       expect(() => parseFloodSnapshot(bad, fetchedAt), throwsArgumentError);
     });
 
@@ -75,7 +76,7 @@ void main() {
       final client = FloodClient(
         client: _FakeHttp((uri) async {
           requested = uri;
-          return _Response(200, fixture);
+          return http.Response(fixture, 200);
         }),
       );
       final snap = await client.fetchDaily(
@@ -88,7 +89,7 @@ void main() {
 
     test('non-200 raises StateError', () async {
       final client = FloodClient(
-        client: _FakeHttp((uri) async => _Response(500, 'boom')),
+        client: _FakeHttp((uri) async => http.Response('boom', 500)),
       );
       expect(
         () => client.fetchDaily(lat: 28.6, lng: 81.2, now: fetchedAt),
@@ -98,24 +99,13 @@ void main() {
   });
 }
 
-class _Response implements http.Response {
-  _Response(this.statusCode, this.body);
-
-  @override
-  final int statusCode;
-  @override
-  final String body;
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
 class _FakeHttp implements http.Client {
   _FakeHttp(this.handler);
 
-  final Future<_Response> Function(Uri uri) handler;
+  final Future<http.Response> Function(Uri uri) handler;
 
   @override
-  Future<_Response> get(Uri url, {Map<String, String>? headers}) =>
+  Future<http.Response> get(Uri url, {Map<String, String>? headers}) =>
       handler(url);
 
   @override
