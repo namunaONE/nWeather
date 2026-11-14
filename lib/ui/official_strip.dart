@@ -82,9 +82,15 @@ class _OfficialStripData extends ConsumerWidget {
               ? const Text('DHM bulletin: MISSING — the official snapshot has no '
                   'bulletin right now. nWeather never paraphrases an official '
                   'warning without a receipt.')
-              : Text('DHM bulletin (verbatim): ${bulletin.title}
-'
-                  'issued ${nptStamp(bulletin.issuedAt)}'),
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('DHM bulletin (verbatim): ${bulletin.title}'),
+                    const SizedBox(height: 4),
+                    Text('issued ${nptStamp(bulletin.issuedAt)}'),
+                  ],
+                ),
         ],
       ),
     );
