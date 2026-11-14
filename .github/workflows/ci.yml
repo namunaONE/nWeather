@@ -13,6 +13,8 @@ jobs:
   flutter:
     name: analyze / test / build web
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -22,22 +24,43 @@ jobs:
           cache: true
 
       - name: flutter pub get
-        run: flutter pub get
+        run: set -o pipefail; flutter pub get 2>&1 | tee /tmp/step-pubget.log
 
       - name: flutter analyze (fatal-infos)
-        run: flutter analyze --fatal-infos
+        run: set -o pipefail; flutter analyze --fatal-infos 2>&1 | tee /tmp/step-analyze.log
 
       - name: flutter test
-        run: flutter test
+        run: set -o pipefail; flutter test 2>&1 | tee /tmp/step-test.log
 
       - name: flutter build web
-        run: flutter build web --release
+        run: set -o pipefail; flutter build web --release 2>&1 | tee /tmp/step-build.log
 
       - uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: build/web
           if-no-files-found: error
+
+      # TEMPORARY diagnostics: the workspace cannot read Actions logs
+      # (no log tool; raw API rate-limited; job pages need sign-in), so on
+      # failure we push the failing step's log tail to the branch itself.
+      # Remove once CI is reliably green.
+      - name: Push failure diagnostics to branch
+        if: failure()
+        run: |
+          {
+            echo "nWeather CI failure diagnostics — ${GITHUB_SHA}"
+            for f in /tmp/step-*.log; do
+              [ -f "$f" ] || continue
+              echo "===== $f (tail 120 lines) ====="
+              tail -n 120 "$f"
+            done
+          } > ci-diagnostics.txt
+          git config user.email "ci@namunaone.invalid"
+          git config user.name "nWeather CI"
+          git add ci-diagnostics.txt
+          git commit -m "ci: failure diagnostics [skip ci]"
+          git push
 
   docs:
     name: docs links exist
