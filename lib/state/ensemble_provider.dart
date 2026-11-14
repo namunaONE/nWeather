@@ -1,4 +1,4 @@
-textsuccessfully downloaded text file (SHA: d46223f3e63dba5d9648369710c5bf7de374151c)import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/open_meteo_ensemble.dart';
 import 'compare_provider.dart' show PlaceCoords, clockProvider;
