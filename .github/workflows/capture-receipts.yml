@@ -25,6 +25,10 @@ jobs:
         run: |
           set -x
           exec > >(tee /tmp/step-capture.log) 2>&1
+          if [ -f receipts/hya-409/hydrology-bundle-urls.txt ]; then
+            echo 'round 2 already captured; skipping'
+            exit 0
+          fi
           UA='nWeather receipt capture (github.com/namunaONE/nWeather)'
           mkdir -p /tmp/receipts
           base='https://flood-api.open-meteo.com/v1/flood'
@@ -40,9 +44,13 @@ jobs:
           curl -sS -A "$UA" -L 'https://hydrology.gov.np/' \
             -o /tmp/receipts/hydrology-home.html -w 'hydrology-home HTTP %{http_code}\n' || true
           grep -oiE 'href="[^"]*(flood|bulletin|notice|warning)[^"]*"' /tmp/receipts/hydrology-home.html | sort -u | head -30 > /tmp/receipts/hydrology-links.txt || true
+          curl -sS -A "$UA" -L 'https://hydrology.gov.np/static/js/main.6853daa2.js' \
+            -o /tmp/receipts/hydrology-main-bundle.js -w 'hydrology-bundle HTTP %{http_code}\n' || true
+          grep -oE 'https?://[^"'"'"' )]{5,140}' /tmp/receipts/hydrology-main-bundle.js 2>/dev/null | sort -u | head -80 > /tmp/receipts/hydrology-bundle-urls.txt || true
+          grep -oE '"/[a-zA-Z0-9_/.-]{2,80}"' /tmp/receipts/hydrology-main-bundle.js 2>/dev/null | sort -u | head -80 > /tmp/receipts/hydrology-bundle-paths.txt || true
           cp /tmp/receipts/* .
           mkdir -p receipts/hya-409
-          mv flood-*.json hydrology-*.html hydrology-links.txt receipts/hya-409/ 2>/dev/null || true
+          mv -n flood-*.json hydrology-*.html hydrology-links.txt hydrology-bundle-urls.txt hydrology-bundle-paths.txt receipts/hya-409/ 2>/dev/null || true
           git config user.name 'nWeather receipt bot'
           git config user.email 'receipts@namunaone.invalid'
           git add receipts/hya-409
