@@ -4,12 +4,13 @@ import 'package:nepal_admin_api/nepal_admin_api.dart';
 
 import '../state/place_controller.dart';
 import 'bs_date_header.dart';
+import 'compare_card.dart';
 import 'panel_frame.dart';
 import 'place_picker.dart';
 
 /// The bento-grid home. Mobile stacks in strict priority order
-/// (hazard -> official -> now/48h -> rest, HYA-460); today only the place
-/// and date panels exist, so the order is simply: date, place, roadmap.
+/// (hazard -> official -> now/48h -> rest, HYA-460); today: date, place,
+/// compare card, roadmap.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -70,14 +71,15 @@ class HomePage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
+                const CompareSection(),
+                const SizedBox(height: 12),
                 const PanelFrame(
                   title: 'Coming next — contract-first, no fake data',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('• Weather compare card — IFS / ICON / GFS side by '
-                          'side, never averaged (HYA-407)'),
+                      Text('• Rainfall ensemble + DHM sentence (HYA-408)'),
                       Text('• Official DHM strip — fail-closed parser in CI '
                           '(HYA-454)'),
                       Text('• /cache/*.json snapshots served same-origin by '
