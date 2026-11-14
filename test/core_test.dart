@@ -11,7 +11,9 @@ void main() {
     });
 
     test('bilingual search finds Bharatpur by Devanagari', () {
-      final r = NepalAdminApi.search('भारतपुर');
+      // The dataset's own Devanagari spelling (nGeo README/CHANGELOG):
+      // 'भरतपुर'. The aspirated 'भारतपुर' is not in the data.
+      final r = NepalAdminApi.search('भरतपुर');
       expect(r.localBodies.any((b) => b.name == 'Bharatpur'), isTrue);
     });
 
@@ -29,10 +31,13 @@ void main() {
     });
 
     test('AD -> BS -> AD round-trips inside the table', () {
+      // Samples are GREGORIAN dates; the table spans BS 1975-2100 =
+      // Gregorian 1918-04-13 .. 2044-04-12. A Gregorian year like 2080
+      // is outside it even though BS 2080 is inside.
       const samples = [
         (2020, 5, 1),
         (2026, 11, 13),
-        (2080, 1, 15),
+        (2040, 1, 15),
       ];
       for (final (y, m, d) in samples) {
         final g = DateTime.utc(y, m, d);
@@ -42,8 +47,14 @@ void main() {
     });
 
     test('refuses dates outside the table (fail-closed, never guesses)', () {
+      // Before Baisakh 1, BS 1975 (1918-04-13) and after Chaitra end,
+      // BS 2100 (2044-04-12) — both bounds in Gregorian terms.
       expect(
-        () => fullCalendar.fromGregorian(DateTime.utc(1970, 1, 1)),
+        () => fullCalendar.fromGregorian(DateTime.utc(1900, 1, 1)),
+        throwsArgumentError,
+      );
+      expect(
+        () => fullCalendar.fromGregorian(DateTime.utc(2080, 1, 1)),
         throwsArgumentError,
       );
     });
