@@ -1,4 +1,5 @@
 # nWeather CI. Gate philosophy from day one (nMiti-style):
+# (diagnostics-enabled run)
 # analyze -> test -> build, warnings are errors. Web-first (v1 decision):
 # the build artifact is the web bundle; APK lands with the android/ scaffold.
 name: ci
