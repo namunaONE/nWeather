@@ -9,10 +9,6 @@ on:
   pull_request:
   workflow_dispatch:
 
-# issues: write is for the temporary failure-diagnostics step (remove with it).
-permissions:
-  contents: write
-  issues: write
 
 jobs:
   flutter:
@@ -27,34 +23,13 @@ jobs:
           cache: true
 
       - name: flutter pub get
-        run: set -o pipefail; flutter pub get 2>&1 | tee /tmp/step-pubget.log
+        run: set -o pipefail; flutter pub get
 
       - name: flutter analyze (fatal-infos)
-        run: set -o pipefail; flutter analyze --fatal-infos 2>&1 | tee /tmp/step-analyze.log
+        run: set -o pipefail; flutter analyze --fatal-infos
 
       - name: flutter test
-        run: set -o pipefail; flutter test 2>&1 | tee /tmp/step-test.log
-
-      # Temporary diagnostics channel: on failure, file an issue with the
-      # failing steps' log tails. Remove once HYA-454 is green.
-      - name: Report failure diagnostics
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          {
-            echo "Automated diagnostics for run ${{ github.run_id }} (attempt ${{ github.run_attempt }}), commit ${{ github.sha }}."
-            echo
-            for f in /tmp/step-*.log; do
-              [ -f "$f" ] || continue
-              echo "### tail of $f"
-              echo '```'
-              tail -c 4000 "$f"
-              echo
-              echo '```'
-            done
-          } > /tmp/diag.md
-          gh issue create --title "CI diagnostics — run ${{ github.run_id }}" --body-file /tmp/diag.md || true
+        run: set -o pipefail; flutter test
 
       # Project page: namunaone.github.io/nWeather/ — the base href must
       # match the repo path or every asset 404s under the subpath.
