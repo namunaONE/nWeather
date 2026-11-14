@@ -9,6 +9,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# issues: write is for the temporary failure-diagnostics step (remove with it).
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   flutter:
     name: analyze / test / build web
