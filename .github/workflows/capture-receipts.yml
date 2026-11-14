@@ -18,8 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: realpoudel/hya-409-flood-two-layers
 
-      - name: Fetch live receipts
+      - name: Fetch live receipts and commit them
         run: |
           set -x
           exec > >(tee /tmp/step-capture.log) 2>&1
@@ -38,25 +40,9 @@ jobs:
           curl -sS -A "$UA" -L 'https://hydrology.gov.np/' \
             -o /tmp/receipts/hydrology-home.html -w 'hydrology-home HTTP %{http_code}\n' || true
           grep -oiE 'href="[^"]*(flood|bulletin|notice|warning)[^"]*"' /tmp/receipts/hydrology-home.html | sort -u | head -30 > /tmp/receipts/hydrology-links.txt || true
-          link=$(grep -oiE 'href="[^"]*(flood|bulletin)[^"]*"' /tmp/receipts/hydrology-home.html | head -1 | sed 's/^href="//i; s/"$//')
-          if [ -n "$link" ]; then
-            case "$link" in
-              http*) url="$link" ;;
-              /*) url="https://hydrology.gov.np$link" ;;
-              *) url="https://hydrology.gov.np/$link" ;;
-            esac
-            curl -sS -A "$UA" -L "$url" -o /tmp/receipts/hydrology-bulletin.html -w "hydrology-bulletin($url) HTTP %{http_code}\n" || true
-          fi
           cp /tmp/receipts/* .
-
-      - name: Commit receipts (skip-ci, once)
-        run: |
-          if [ -d receipts/hya-409 ]; then
-            echo 'receipts already captured; skipping'
-            exit 0
-          fi
           mkdir -p receipts/hya-409
-          mv flood-*.json hydrology-*.html receipts/hya-409/ 2>/dev/null || true
+          mv flood-*.json hydrology-*.html hydrology-links.txt receipts/hya-409/ 2>/dev/null || true
           git config user.name 'nWeather receipt bot'
           git config user.email 'receipts@namunaone.invalid'
           git add receipts/hya-409
@@ -65,7 +51,7 @@ jobs:
             exit 0
           fi
           git commit -m 'receipts: HYA-409 live capture [skip ci]'
-          git push origin HEAD:realpoudel/hya-409-flood-two-layers
+          git push -v origin HEAD:realpoudel/hya-409-flood-two-layers
 
       - name: Report capture failure
         if: failure()
