@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The honesty footer that travels with every value: source, age, tier.
 /// This is the UI contract from docs/methodology.md — every panel embeds one.
