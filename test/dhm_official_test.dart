@@ -121,7 +121,7 @@ void main() {
   group('stamps + staleness', () {
     test('NPT stamp is +05:45', () {
       expect(nptStamp(DateTime.utc(2026, 11, 13, 12, 15)),
-          '2026-11-13 17:45 NPT');
+          '2026-11-13 18:00 NPT');
     });
 
     test('staleness budget is 30 h', () {
