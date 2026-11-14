@@ -13,11 +13,18 @@ jobs:
         with:
           channel: stable
       - run: flutter pub get
-      - name: analyze and commit report
+      - name: analyze, test, build — commit report
         run: |
           flutter analyze --fatal-infos > analyze-report.txt 2>&1 || true
+          flutter test > test-output.txt 2>&1 || true
+          echo '--- flutter test (tail) ---' >> analyze-report.txt
+          tail -n 250 test-output.txt >> analyze-report.txt
+          flutter build web > build-output.txt 2>&1 || true
+          echo '--- flutter build web (tail) ---' >> analyze-report.txt
+          tail -n 80 build-output.txt >> analyze-report.txt
+          rm -f test-output.txt build-output.txt
           git config user.name "Namuna One"
           git config user.email "realpoudel@duck.com"
           git add analyze-report.txt
-          git commit -m "HYA-411: analyzer report (temporary diagnostics)"
+          git commit -m "HYA-411: ci diagnostics report (temporary, removed before merge)"
           git push
