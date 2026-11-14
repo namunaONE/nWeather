@@ -1,8 +1,9 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:nepal_admin_api/nepal_admin_api.dart';
 
 import '../state/place_controller.dart';
+import 'air_quality_card.dart';
 import 'bs_date_header.dart';
 import 'compare_card.dart';
 import 'flood_card.dart';
@@ -11,11 +12,12 @@ import 'panel_frame.dart';
 import 'place_picker.dart';
 import 'quake_card.dart';
 import 'rainfall_card.dart';
+import 'thunder_card.dart';
 
 /// The bento-grid home. Mobile stacks in strict priority order
 /// (hazard -> official -> now/48h -> rest, HYA-460); today: date, official
 /// DHM strip, place, compare card, rainfall card, flood panel, earthquake
-/// panel, roadmap.
+/// panel, air panel, thunder outlook, roadmap.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -86,13 +88,16 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const QuakeSection(),
                 const SizedBox(height: 12),
+                const AirSection(),
+                const SizedBox(height: 12),
+                const ThunderSection(),
+                const SizedBox(height: 12),
                 const PanelFrame(
                   title: 'Coming next — contract-first, no fake data',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('• Air quality panel (HYA-411)'),
                       Text('• /cache/*.json snapshots served same-origin by '
                           'Pages (HYA-412)'),
                     ],

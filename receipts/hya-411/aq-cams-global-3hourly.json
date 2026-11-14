@@ -1,0 +1,1 @@
+{"error":true,"reason":"Invalid value at 'temporal_resolution': Cannot initialize ApiTemporalResolution from invalid String value hourly_3hourly"}
