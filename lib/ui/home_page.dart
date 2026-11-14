@@ -5,13 +5,14 @@ import 'package:nepal_admin_api/nepal_admin_api.dart';
 import '../state/place_controller.dart';
 import 'bs_date_header.dart';
 import 'compare_card.dart';
+import 'official_strip.dart';
 import 'panel_frame.dart';
 import 'place_picker.dart';
 import 'rainfall_card.dart';
 
 /// The bento-grid home. Mobile stacks in strict priority order
-/// (hazard -> official -> now/48h -> rest, HYA-460); today: date, place,
-/// compare card, rainfall card, roadmap.
+/// (hazard -> official -> now/48h -> rest, HYA-460); today: date, official
+/// DHM strip, place, compare card, rainfall card, roadmap.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -42,6 +43,8 @@ class HomePage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const BsDateHeader(),
+                const SizedBox(height: 12),
+                const OfficialStrip(),
                 const SizedBox(height: 12),
                 PanelFrame(
                   title: 'Place',
@@ -82,8 +85,6 @@ class HomePage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('• Official DHM strip — fail-closed parser in CI '
-                          '(HYA-454)'),
                       Text('• Flood: GloFAS + bulletin, two layers (HYA-409)'),
                       Text('• /cache/*.json snapshots served same-origin by '
                           'Pages (HYA-412)'),

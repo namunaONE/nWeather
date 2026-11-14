@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/open_meteo.dart' show humanAge;
 import '../data/open_meteo_ensemble.dart';
 import '../state/compare_provider.dart';
+import '../state/dhm_provider.dart';
 import '../state/ensemble_provider.dart';
 import '../state/place_controller.dart';
 import 'panel_frame.dart';
 
 /// Wires the selected place's coordinates into the rainfall card. A palika
 /// without coordinates fails closed: an honest explanation, no numbers.
+/// Also surfaces the verbatim DHM bulletin title from the official snapshot
+/// (HYA-454) into the official-words zone.
 class RainfallSection extends ConsumerWidget {
   const RainfallSection({super.key});
 
@@ -26,6 +29,8 @@ class RainfallSection extends ConsumerWidget {
         ),
       );
     }
+    final officialTitle =
+        ref.watch(dhmOfficialProvider).valueOrNull?.bulletin?.title;
     final async = ref.watch(ensembleProvider((lat: coords.lat, lng: coords.lng)));
     return async.when(
       loading: () => const PanelFrame(
@@ -37,8 +42,11 @@ class RainfallSection extends ConsumerWidget {
         child: Text('MISSING — ensemble guidance could not be fetched ($e). '
             'Fail-closed; retry by reopening the app.'),
       ),
-      data: (forecasts) =>
-          RainfallCard(forecasts: forecasts, now: ref.watch(clockProvider)),
+      data: (forecasts) => RainfallCard(
+        forecasts: forecasts,
+        now: ref.watch(clockProvider),
+        officialTitle: officialTitle,
+      ),
     );
   }
 }
@@ -46,12 +54,18 @@ class RainfallSection extends ConsumerWidget {
 /// HYA-408 — the rainfall card: ensemble DISTRIBUTIONS per model per day
 /// (min–max and member agreement), never a single number, never averaged.
 /// Above the rows sits the official-words zone: verbatim DHM text only,
-/// fail-closed MISSING until the verified CI parser (HYA-454) lands.
+/// fail-closed MISSING when the official snapshot has no bulletin.
 class RainfallCard extends StatelessWidget {
-  const RainfallCard({super.key, required this.forecasts, required this.now});
+  const RainfallCard({
+    super.key,
+    required this.forecasts,
+    required this.now,
+    required this.officialTitle,
+  });
 
   final List<EnsembleForecast> forecasts;
   final DateTime now;
+  final String? officialTitle;
 
   String _cell(EnsembleForecast f, int day) {
     if (f.isMissing || day >= f.days.length) return 'MISSING';
@@ -88,7 +102,7 @@ class RainfallCard extends StatelessWidget {
       source:
           'Open-Meteo Ensemble API · ${forecasts.map((f) => f.modelId).join(', ')}',
       age: fetchedAt == null ? 'no data' : humanAge(fetchedAt.toUtc(), now.toUtc()),
-      tier: 'ensemble guidance · $state · distribution shown, never "DHM said"',
+      tier: 'ensemble guidance · $state · distribution shown, never \"DHM said\"',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -106,9 +120,10 @@ class RainfallCard extends StatelessWidget {
                 Text('Official words — fail-closed', style: header),
                 const SizedBox(height: 4),
                 Text(
-                  'DHM bulletin sentence: MISSING — the verified CI parser '
-                  '(HYA-454) has not landed yet. nWeather never paraphrases '
-                  'an official warning without a receipt.',
+                  officialTitle ??
+                      'DHM bulletin sentence: MISSING — the official snapshot '
+                          'has no bulletin right now. nWeather never '
+                          'paraphrases an official warning without a receipt.',
                   style: cell,
                 ),
               ],
