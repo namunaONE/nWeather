@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   capture:
@@ -19,8 +20,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch live receipts
-        if: ${{ runner.os == 'Linux' }}
         run: |
+          set -x
+          exec > >(tee /tmp/step-capture.log) 2>&1
           UA='nWeather receipt capture (github.com/namunaONE/nWeather)'
           mkdir -p /tmp/receipts
           base='https://flood-api.open-meteo.com/v1/flood'
@@ -56,3 +58,18 @@ jobs:
           fi
           git commit -m 'receipts: HYA-409 live capture [skip ci]'
           git push origin HEAD:realpoudel/hya-409-flood-two-layers
+
+      - name: Report capture failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Capture failed for run ${{ github.run_id }}, commit ${{ github.sha }}."
+            echo
+            echo '```'
+            tail -c 6000 /tmp/step-capture.log 2>/dev/null || echo '(no log)'
+            echo
+            echo '```'
+          } > /tmp/diag.md
+          gh issue create --title "HYA-409 capture diagnostics — run ${{ github.run_id }}" --body-file /tmp/diag.md || true
