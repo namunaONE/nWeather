@@ -1,6 +1,6 @@
-# nWeather CI scaffold (HYA-452). Gate philosophy from day one (nMiti-style):
-# analyze -> test -> build, warnings are errors. The Flutter steps are skipped
-# until pubspec.yaml exists, so CI is green from the first commit.
+# nWeather CI. Gate philosophy from day one (nMiti-style):
+# analyze -> test -> build, warnings are errors. Web-first (v1 decision):
+# the build artifact is the web bundle; APK lands with the android/ scaffold.
 name: ci
 
 on:
@@ -11,43 +11,62 @@ on:
 
 jobs:
   flutter:
-    name: analyze / test / build
+    name: analyze / test / build web
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for Flutter project
-        id: has_flutter
-        run: echo "present=$([ -f pubspec.yaml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-
       - uses: subosito/flutter-action@v2
-        if: steps.has_flutter.outputs.present == 'true'
         with:
           channel: stable
           cache: true
 
       - name: flutter pub get
-        if: steps.has_flutter.outputs.present == 'true'
-        run: flutter pub get
+        run: set -o pipefail; flutter pub -v get 2>&1 | tee /tmp/step-pubget.log
 
       - name: flutter analyze (fatal-infos)
-        if: steps.has_flutter.outputs.present == 'true'
-        run: flutter analyze --fatal-infos
+        run: set -o pipefail; flutter analyze --fatal-infos 2>&1 | tee /tmp/step-analyze.log
 
       - name: flutter test
-        if: steps.has_flutter.outputs.present == 'true'
-        run: flutter test
+        run: set -o pipefail; flutter test 2>&1 | tee /tmp/step-test.log
 
-      - name: Build APK artifact
-        if: steps.has_flutter.outputs.present == 'true'
-        run: flutter build apk --debug
+      - name: flutter build web
+        run: set -o pipefail; flutter build web --release 2>&1 | tee /tmp/step-build.log
 
       - uses: actions/upload-artifact@v4
-        if: steps.has_flutter.outputs.present == 'true'
         with:
-          name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: web-build
+          path: build/web
           if-no-files-found: error
+
+      # TEMPORARY diagnostics: the workspace cannot read Actions logs
+      # (log download needs admin; job pages need sign-in), so on failure we
+      # (1) open an issue with the failing steps' log tails and (2) push the
+      # same file to the branch. Remove once CI is reliably green.
+      - name: Report failure diagnostics
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Commit: ${GITHUB_SHA} | Event: ${GITHUB_EVENT_NAME} | HeadRef: ${GITHUB_HEAD_REF}"
+            for f in /tmp/step-*.log; do
+              [ -f "$f" ] || continue
+              echo "===== $f (tail 150 lines) ====="
+              tail -n 150 "$f"
+            done
+          } > diag.md
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "CI diagnostics — run ${GITHUB_RUN_ID}" --body-file diag.md || true
+          cp diag.md ci-diagnostics.txt
+          git config user.email "ci@namunaone.invalid"
+          git config user.name "nWeather CI"
+          git add ci-diagnostics.txt
+          git commit -m "ci: failure diagnostics [skip ci]" || true
+          git push origin HEAD:"${GITHUB_HEAD_REF}" || true
 
   docs:
     name: docs links exist
@@ -58,5 +77,6 @@ jobs:
         run: |
           test -f docs/sources.md
           test -f docs/methodology.md
+          test -f docs/developers.md
           test -f LICENSE
           test -f NOTICE

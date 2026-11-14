@@ -1,0 +1,53 @@
+name: nweather
+description: nWeather — Nepal-only weather and hazard channel. Two truths, never averaged.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  http: ^1.2.2
+  # Flutter 3.50 deprecated the bundled Material/Cupertino libraries;
+  # the UI imports use the standalone package (official migration path).
+  material_ui: ^1.0.0
+  # Git refs are pinned to commit SHAs (receipt philosophy): a floating
+  # `main` makes CI non-reproducible and lets upstream drift break the build.
+  nepal_admin_api:
+    git:
+      url: https://github.com/namunaONE/nGeo.git
+      ref: 6f20cc4154507a4cef0b498dde6a81632d0b7fb5
+  nepali_date:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date
+      ref: 7aee8bc875bf73b2a884a7cfecef936fab35679c
+  nepali_date_data:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date_data
+      ref: 7aee8bc875bf73b2a884a7cfecef936fab35679c
+
+# The nMiti packages are members of a pub workspace (`resolution: workspace`
+# in their pubspecs). Consumed as git dependencies, that workspace is not in
+# play: `nepali_date_data`'s `nepali_date: ^0.1.0` constraint falls back to
+# its implicit hosted source (pub.dev), where `nepali_date` was never
+# published (`publish_to: none`), so version solving fails at `pub get`.
+# This override redirects that constraint to the same pinned git checkout.
+dependency_overrides:
+  nepali_date:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date
+      ref: 7aee8bc875bf73b2a884a7cfecef936fab35679c
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
