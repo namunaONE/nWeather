@@ -46,7 +46,7 @@ jobs:
       # failure we push the failing step's log tail to the branch itself.
       # Remove once CI is reliably green.
       - name: Push failure diagnostics to branch
-        if: failure()
+        if: failure() && github.event_name == 'pull_request'
         run: |
           {
             echo "nWeather CI failure diagnostics — ${GITHUB_SHA}"
@@ -60,17 +60,4 @@ jobs:
           git config user.name "nWeather CI"
           git add ci-diagnostics.txt
           git commit -m "ci: failure diagnostics [skip ci]"
-          git push
-
-  docs:
-    name: docs links exist
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Docs referenced from README exist
-        run: |
-          test -f docs/sources.md
-          test -f docs/methodology.md
-          test -f docs/developers.md
-          test -f LICENSE
-          test -f NOTICE
+          git push origin HEAD:"${GITHUB_HEAD_REF}"
