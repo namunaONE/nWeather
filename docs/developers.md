@@ -23,18 +23,44 @@ dependencies:
   nepal_admin_api:
     git:
       url: https://github.com/namunaONE/nGeo.git
-      ref: main
+      ref: <pin a commit SHA>
   nepali_date:
     git:
       url: https://github.com/namunaONE/nMiti.git
       path: packages/nepali_date
-      ref: main
+      ref: <pin the same commit SHA>
   nepali_date_data:
     git:
       url: https://github.com/namunaONE/nMiti.git
       path: packages/nepali_date_data
-      ref: main
+      ref: <pin the same commit SHA>
+
+# REQUIRED with the nMiti git deps (a floating `ref: main` will break you
+# the same way): the nMiti packages are pub-workspace members, so consumed
+# as plain git deps the `nepali_date` constraint resolves against pub.dev —
+# where `nepali_date` was never published — and `pub get` fails. Redirect it
+# to the same pinned checkout:
+dependency_overrides:
+  nepali_date:
+    git:
+      url: https://github.com/namunaONE/nMiti.git
+      path: packages/nepali_date
+      ref: <pin the same commit SHA>
 ```
+
+## Deployment (live site)
+
+The app deploys automatically: every push to `main` runs CI
+(analyze → test → build web, warnings are errors) and the green web bundle
+is published to GitHub Pages:
+
+**https://namunaone.github.io/nWeather/**
+
+- The build pins `--base-href /nWeather/` so assets resolve under the
+  project-page subpath.
+- Pull requests stop at the build gate; only `main` deploys.
+- The published bundle is exactly what CI verified — no manual builds,
+  no drift between what passed checks and what users get.
 
 ## The open snapshot API (planned — HYA-462)
 
