@@ -1,0 +1,23 @@
+name: analyze-report
+on:
+  push:
+    branches: [realpoudel/hya-411-air-dust-and-uv-cams-global-only]
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - name: analyze and commit report
+        run: |
+          flutter analyze --fatal-infos > analyze-report.txt 2>&1 || true
+          git config user.name "Namuna One"
+          git config user.email "realpoudel@duck.com"
+          git add analyze-report.txt
+          git commit -m "HYA-411: analyzer report (temporary diagnostics)"
+          git push
