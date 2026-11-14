@@ -45,18 +45,18 @@ void main() {
     });
 
     test(
-        'last issued hour 2026-11-18T14:00 GMT — variables cut off one hour '
-        'apart, each keeps its own cutoff', () {
-      // In the receipted run, US AQI is issued one hour beyond PM2.5.
-      // lastIssued is the last hour with ANY value; its PM2.5 is null and
-      // stays null — never back-filled from the earlier hour.
+        'last issued hour 2026-11-18T13:00 GMT — US AQI issued one hour '
+        'beyond PM2.5, each variable keeps its own cutoff', () {
+      // In the receipted run, US AQI is issued through 13:00 while PM2.5
+      // stops at 12:00. lastIssued is the last hour with ANY value; its
+      // PM2.5 is null and stays null — never back-filled from 12:00.
       final last = snapshot.lastIssued!;
-      expect(last.timeUtc, DateTime.utc(2026, 11, 18, 14));
+      expect(last.timeUtc, DateTime.utc(2026, 11, 18, 13));
       expect(last.usAqi, 138.0);
       expect(last.pm25, isNull);
       // PM2.5's own last issued hour, verbatim.
       final lastPm25 = snapshot.hours[132];
-      expect(lastPm25.timeUtc, DateTime.utc(2026, 11, 18, 13));
+      expect(lastPm25.timeUtc, DateTime.utc(2026, 11, 18, 12));
       expect(lastPm25.pm25, 37.3);
       expect(lastPm25.usAqi, 138.0);
       final trailing =
