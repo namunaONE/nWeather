@@ -1,0 +1,58 @@
+name: capture-receipts
+
+# TEMPORARY (HYA-409 contract-first): fetch live receipts for the flood
+# endpoints and commit them under receipts/hya-409/ on this branch.
+# Removed before merge. The [skip ci] commit message prevents a CI loop,
+# and the step is skipped once the receipts directory exists.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch live receipts
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          UA='nWeather receipt capture (github.com/namunaONE/nWeather)'
+          mkdir -p /tmp/receipts
+          base='https://flood-api.open-meteo.com/v1/flood'
+          curl -sS -A "$UA" \
+            '$base?latitude=28.60&longitude=81.20&daily=river_discharge,river_discharge_mean,river_discharge_median,river_discharge_min,river_discharge_max,river_discharge_p25,river_discharge_p75' \
+            -o /tmp/receipts/flood-default-karnali.json -w 'flood-default HTTP %{http_code}\n' || true
+          curl -sS -A "$UA" \
+            '$base?latitude=28.60&longitude=81.20&daily=river_discharge&model=forecast_v4' \
+            -o /tmp/receipts/flood-forecast_v4-karnali.json -w 'flood-forecast_v4 HTTP %{http_code}\n' || true
+          curl -sS -A "$UA" \
+            '$base?latitude=28.60&longitude=81.20&daily=river_discharge&model=seamless_v4' \
+            -o /tmp/receipts/flood-seamless_v4-karnali.json -w 'flood-seamless_v4 HTTP %{http_code}\n' || true
+          curl -sS -A "$UA" -L 'https://hydrology.gov.np/' \
+            -o /tmp/receipts/hydrology-home.html -w 'hydrology-home HTTP %{http_code}\n' || true
+          curl -sS -A "$UA" -L 'https://hydrology.gov.np/flood-forecasting' \
+            -o /tmp/receipts/hydrology-flood-forecasting.html -w 'hydrology-bulletin HTTP %{http_code}\n' || true
+          cp /tmp/receipts/* .
+
+      - name: Commit receipts (skip-ci, once)
+        run: |
+          if [ -d receipts/hya-409 ]; then
+            echo 'receipts already captured; skipping'
+            exit 0
+          fi
+          mkdir -p receipts/hya-409
+          mv flood-*.json hydrology-*.html receipts/hya-409/ 2>/dev/null || true
+          git config user.name 'nWeather receipt bot'
+          git config user.email 'receipts@namunaone.invalid'
+          git add receipts/hya-409
+          if git diff --cached --quiet; then
+            echo 'nothing captured'
+            exit 0
+          fi
+          git commit -m 'receipts: HYA-409 live capture [skip ci]'
+          git push origin HEAD:realpoudel/hya-409-flood-two-layers
