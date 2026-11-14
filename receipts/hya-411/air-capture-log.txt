@@ -1,0 +1,21 @@
+https://air-quality-api.open-meteo.com/v1/air-quality?latitude=27.7172&longitude=85.3240&domains=cams_global&hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,aerosol_optical_depth,dust,uv_index,us_aqi&past_days=1&forecast_days=5 -> HTTP 200
+https://air-quality-api.open-meteo.com/v1/air-quality?latitude=27.7172&longitude=85.3240&domains=cams_global&temporal_resolution=hourly_3hourly&hourly=pm10,pm2_5,dust,uv_index,us_aqi&forecast_days=5 -> HTTP 400
+https://air-quality-api.open-meteo.com/v1/air-quality?latitude=27.7172&longitude=85.3240&domains=cams_europe&hourly=pm10,pm2_5,us_aqi&forecast_days=2 -> HTTP 400
+https://api.open-meteo.com/v1/forecast?latitude=27.7172&longitude=85.3240&forecast_days=3&hourly=weathercode,cape&models=ecmwf_ifs025 -> HTTP 200
+https://api.open-meteo.com/v1/forecast?latitude=27.7172&longitude=85.3240&forecast_days=3&hourly=weathercode,cape&models=ecmwf_aifs025_single -> HTTP 200
+https://api.open-meteo.com/v1/forecast?latitude=27.7172&longitude=85.3240&forecast_days=3&hourly=weathercode,cape&models=icon_seamless -> HTTP 200
+https://api.open-meteo.com/v1/forecast?latitude=27.7172&longitude=85.3240&forecast_days=3&hourly=weathercode,cape&models=ncep_gfs_seamless -> HTTP 200
+--- aq-cams-europe-probe.json head ---
+{"error":true,"reason":"No data is available for this location"}
+--- aq-cams-global-3hourly.json head ---
+{"error":true,"reason":"Invalid value at 'temporal_resolution': Cannot initialize ApiTemporalResolution from invalid String value hourly_3hourly"}
+--- aq-cams-global-kathmandu.json head ---
+{"latitude":27.700005,"longitude":85.30002,"generationtime_ms":0.5903244018554688,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":1301.0,"hourly_units":{"time":"iso8601","pm10":"μg/m³","pm2_5":"μg/m³","carbon_monoxide":"μg/m³","nitrogen_dioxide":"μg/m³","sulphur_dioxide":"μg/m³","ozone":"μg/m³","aerosol_optical_depth":"","dust":"μg/m³","uv_index":"",
+--- fc-thunder-ecmwf_aifs025_single.json head ---
+{"latitude":27.75,"longitude":85.25,"generationtime_ms":0.14066696166992188,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":1301.0,"hourly_units":{"time":"iso8601","weathercode":"wmo code","cape":"undefined"},"hourly":{"time":["2026-11-14T00:00","2026-11-14T01:00","2026-11-14T02:00","2026-11-14T03:00","2026-11-14T04:00","2026-11-14T05:00","2026-11-14T06:00","2026-
+--- fc-thunder-ecmwf_ifs025.json head ---
+{"latitude":27.75,"longitude":85.25,"generationtime_ms":0.09799003601074219,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":1301.0,"hourly_units":{"time":"iso8601","weathercode":"wmo code","cape":"J/kg"},"hourly":{"time":["2026-11-14T00:00","2026-11-14T01:00","2026-11-14T02:00","2026-11-14T03:00","2026-11-14T04:00","2026-11-14T05:00","2026-11-14T06:00","2026-11-14
+--- fc-thunder-icon_seamless.json head ---
+{"latitude":27.75,"longitude":85.375,"generationtime_ms":0.3854036331176758,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":1301.0,"hourly_units":{"time":"iso8601","weathercode":"wmo code","cape":"J/kg"},"hourly":{"time":["2026-11-14T00:00","2026-11-14T01:00","2026-11-14T02:00","2026-11-14T03:00","2026-11-14T04:00","2026-11-14T05:00","2026-11-14T06:00","2026-11-14
+--- fc-thunder-ncep_gfs_seamless.json head ---
+{"latitude":27.705826,"longitude":85.3125,"generationtime_ms":0.15401840209960938,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":1301.0,"hourly_units":{"time":"iso8601","weathercode":"wmo code","cape":"J/kg"},"hourly":{"time":["2026-11-14T00:00","2026-11-14T01:00","2026-11-14T02:00","2026-11-14T03:00","2026-11-14T04:00","2026-11-14T05:00","2026-11-14T06:00","2026
