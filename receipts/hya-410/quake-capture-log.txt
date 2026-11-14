@@ -1,0 +1,29 @@
+https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2026-10-15&minlatitude=26.0&maxlatitude=30.5&minlongitude=80.0&maxlongitude=88.5&minmagnitude=2.5&orderby=time -> HTTP 200
+https://www.seismicportal.eu/fdsnws/event/1/query?format=json&starttime=2026-10-15&minlatitude=26.0&maxlatitude=30.5&minlongitude=80.0&maxlongitude=88.5&orderby=time -> HTTP 200
+https://bipadportal.gov.np/api/v1/earthquake/ -> HTTP 200
+--- usgs head ---
+{"type":"FeatureCollection","metadata":{"generated":1794624225000,"url":"https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2026-10-15&minlatitude=26.0&maxlatitude=30.5&minlongitude=80.0&maxlongitude=88.5&minmagnitude=2.5&orderby=time","title":"USGS Earthquakes","status":200,"api":"2.8.4","count":5},"features":[{"type":"Feature","properties":{"mag":4.6,"place":"73 km NNW of Gyalshing, India","time":1794438022433,"updated":1794607664819,"tz":null,"url":"https://earthquake.u
+--- emsc head ---
+{"type":"FeatureCollection","metadata":{"count":32},"features":[{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      88.3930,
+      28.9810,
+      -10.0
+    ]
+  },
+  "id": "20261113_0000240",
+  "properties": {
+    "source_id": "2089474",
+    "source_catalog": "EMSC-RTS",
+    "lastupdate": "2026-11-13T19:00:51.476207Z",
+    "time": "2026-11-13T18:48:09.0Z",
+    "flynn_region": "WESTERN XIZANG",
+    "lat": 28.9810,
+    "lon": 88.3930,
+    "depth": 10.0,
+    "evtyp
+--- bipad head ---
+{"count":9223372036854775807,"next":"https://bipadportal.gov.np/api/v1/earthquake/?limit=1000&offset=1000","previous":null,"results":[{"id":698,"createdOn":"2020-10-07T17:41:35.754227+05:45","modifiedOn":"2022-05-29T19:22:02.751555+05:45","description":"NSC","point":{"type":"Point","coordinates":[86.04,27.68]},"magnitude":4.3,"address":"Dolakha","eventOn":"2015-05-12T19:31:00+05:45","ward":530,"municipality":22002,"district":22,"province":3},{"id":331,"createdOn":"2020-10-07T17:41:19.360238+05:4
