@@ -160,9 +160,11 @@ void main() {
         client: _FakeHttp((uri) async {
           urls.add(uri);
           if (uri.host.contains('usgs')) {
-            return http.Response(usgsFixture, 200);
+            return http.Response(usgsFixture, 200,
+                headers: {'content-type': 'application/json; charset=utf-8'});
           }
-          return http.Response(emscFixture, 200);
+          return http.Response(emscFixture, 200,
+              headers: {'content-type': 'application/json; charset=utf-8'});
         }),
       );
       final bundle = await client.fetchAll(
