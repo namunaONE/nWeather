@@ -7,10 +7,11 @@ import 'bs_date_header.dart';
 import 'compare_card.dart';
 import 'panel_frame.dart';
 import 'place_picker.dart';
+import 'rainfall_card.dart';
 
 /// The bento-grid home. Mobile stacks in strict priority order
 /// (hazard -> official -> now/48h -> rest, HYA-460); today: date, place,
-/// compare card, roadmap.
+/// compare card, rainfall card, roadmap.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
@@ -73,15 +74,17 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const CompareSection(),
                 const SizedBox(height: 12),
+                const RainfallSection(),
+                const SizedBox(height: 12),
                 const PanelFrame(
                   title: 'Coming next — contract-first, no fake data',
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('• Rainfall ensemble + DHM sentence (HYA-408)'),
                       Text('• Official DHM strip — fail-closed parser in CI '
                           '(HYA-454)'),
+                      Text('• Flood: GloFAS + bulletin, two layers (HYA-409)'),
                       Text('• /cache/*.json snapshots served same-origin by '
                           'Pages (HYA-412)'),
                     ],
