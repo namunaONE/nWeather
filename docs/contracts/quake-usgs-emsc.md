@@ -20,28 +20,33 @@ two independent catalogues; they are never merged into one number.
   historical NSC records (latest rows 2015–2022 era). NOT used in v1;
   HYA-414 re-evaluates.
 - **NSC (seismonepal.gov.np)** — national network, no public query API.
-  Link-out only. Never scraped.
+  Link-out only. Never scraped. (EMSC rows with `auth: "NSC"` do reach the
+  catalogue — receipted 20261025_0000238.)
 
 ## Parse rules (fail-closed)
 
-- Non-JSON, wrong `type`, missing/non-list `features`, non-num `mag`,
-  non-num coordinates, or an unparseable time → `ArgumentError`; the panel
-  shows MISSING for that catalogue. One dead catalogue degrades to
-  single-source rows; both dead → MISSING.
-- USGS `mag: null` (known USGS possibility) fails closed per event? No:
-  a null-mag feature is SKIPPED (kept out of the list), not fatal — the
-  receipted 30-day window has none, but a null magnitude cannot be shown
-  honestly, and one odd feature must not blank the whole catalogue.
-- Times: USGS epoch-ms → UTC; EMSC ISO string → `DateTime.parse` (must be UTC).
+- Non-JSON, wrong `type`, missing/non-list `features`, non-numeric
+  coordinates, or an unparseable time → `ArgumentError`; the panel shows
+  MISSING for that catalogue. One dead catalogue degrades to single-source
+  rows (recorded in the bundle); both dead → MISSING panel.
+- A feature with a null magnitude is SKIPPED, never guessed: a
+  magnitudeless event cannot be shown honestly, and one odd feature must
+  not blank the whole catalogue.
+- Times: USGS epoch-ms → UTC; EMSC ISO string → `DateTime.parse` → UTC.
 
 ## Matching (the disagreement is the product)
 
 - Same quake across catalogues iff `|Δt| ≤ 60 s` AND haversine `≤ 30 km`.
-- Greedy nearest match, USGS rows in time order; each EMSC event matches at
-  most one USGS event. Unmatched events stay single-source.
-- **Both magnitudes are shown, never averaged** (receipted real pair:
-  USGS us6000u45b M4.5 mb ↔ EMSC 20261022_0000283 M4.4 ml, Δt ≈ 1.3 s,
-  ≈ 19 km).
+- Greedy nearest match over USGS rows in time order; each EMSC event
+  matches at most one USGS event. Unmatched events stay single-source rows.
+- **Both magnitudes are shown, never averaged.** Receipted pairs from the
+  2026-11-14 capture: us7000txpk ↔ 20261111_0000303 (Δt 0.07 s, 5.7 km,
+  4.6 mb vs 4.6 mb) · us6000u4p1 ↔ 20261024_0000355 (Δt 4.7 s, 3.2 km,
+  4.3 mb vs 4.4 m) · us6000u45b ↔ 20261022_0000283 (Δt 1.3 s, 18.8 km,
+  4.5 mb vs 4.4 ml) · us6000u4em ↔ 20261016_0000259 (Δt 2.3 s, 18.8 km,
+  **4.2 mb vs 3.5 m** — the disagreement case that justifies the rule).
+- Receipted rejection: us7000tvzm ↔ 20261025_0000100 is 6.1 s apart but
+  **49.2 km** — time alone never matches.
 - Epicentre → place: nearest palika by centroid (nGeo `latHdx/lngHdx`
   official centroid, fallback `lat/lng`), distance shown. It is a
   nearest-centroid approximation, labelled as such — not point-in-polygon,
