@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../lib/data/dhm_official.dart';
+import 'package:nweather/data/dhm_official.dart';
 
 /// HYA-454 — the CI-side DHM parser. Fetches the receipted MFD API
 /// endpoints, validates the gates (contract:
@@ -121,8 +121,8 @@ Future<void> main() async {
 
   final dir = Directory('cache');
   if (!dir.existsSync()) dir.createSync(recursive: true);
-  File('cache/dhm-official.json').writeAsStringSync(
-      const JsonEncoder.withIndent('  ').convert(snapshot) + '\n');
+  final pretty = const JsonEncoder.withIndent('  ').convert(snapshot);
+  File('cache/dhm-official.json').writeAsStringSync('$pretty\n');
   stdout.writeln('OK: forecast24 id ${forecast24.id} issued ${forecast24.issuedAt.toIso8601String()}'
       ' | bulletin ${bulletin?.id ?? 'null'}');
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/data/dhm_official.dart';
+import 'package:nweather/data/dhm_official.dart';
 import '../tool/fetch_dhm.dart' as fetcher;
 
 void main() {

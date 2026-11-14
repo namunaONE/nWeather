@@ -102,7 +102,7 @@ class RainfallCard extends StatelessWidget {
       source:
           'Open-Meteo Ensemble API · ${forecasts.map((f) => f.modelId).join(', ')}',
       age: fetchedAt == null ? 'no data' : humanAge(fetchedAt.toUtc(), now.toUtc()),
-      tier: 'ensemble guidance · $state · distribution shown, never \"DHM said\"',
+      tier: 'ensemble guidance · $state · distribution shown, never "DHM said"',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
