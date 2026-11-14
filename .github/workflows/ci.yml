@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +25,7 @@ jobs:
           cache: true
 
       - name: flutter pub get
-        run: set -o pipefail; flutter pub get 2>&1 | tee /tmp/step-pubget.log
+        run: set -o pipefail; flutter pub -v get 2>&1 | tee /tmp/step-pubget.log
 
       - name: flutter analyze (fatal-infos)
         run: set -o pipefail; flutter analyze --fatal-infos 2>&1 | tee /tmp/step-analyze.log
@@ -42,25 +43,30 @@ jobs:
           if-no-files-found: error
 
       # TEMPORARY diagnostics: the workspace cannot read Actions logs
-      # (no log tool; raw API rate-limited; job pages need sign-in), so on
-      # failure we push the failing step's log tail to the branch itself.
-      # Remove once CI is reliably green.
-      - name: Push failure diagnostics to branch
+      # (log download needs admin; job pages need sign-in), so on failure we
+      # (1) open an issue with the failing steps' log tails and (2) push the
+      # same file to the branch. Remove once CI is reliably green.
+      - name: Report failure diagnostics
         if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo "nWeather CI failure diagnostics — ${GITHUB_SHA}"
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Commit: ${GITHUB_SHA} | Event: ${GITHUB_EVENT_NAME} | HeadRef: ${GITHUB_HEAD_REF}"
             for f in /tmp/step-*.log; do
               [ -f "$f" ] || continue
-              echo "===== $f (tail 120 lines) ====="
-              tail -n 120 "$f"
+              echo "===== $f (tail 150 lines) ====="
+              tail -n 150 "$f"
             done
-          } > ci-diagnostics.txt
+          } > diag.md
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "CI diagnostics — run ${GITHUB_RUN_ID}" --body-file diag.md || true
+          cp diag.md ci-diagnostics.txt
           git config user.email "ci@namunaone.invalid"
           git config user.name "nWeather CI"
           git add ci-diagnostics.txt
-          git commit -m "ci: failure diagnostics [skip ci]"
-          git push
+          git commit -m "ci: failure diagnostics [skip ci]" || true
+          git push origin HEAD:"${GITHUB_HEAD_REF}" || true
 
   docs:
     name: docs links exist

@@ -11,6 +11,9 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.5.1
   http: ^1.2.2
+  # Flutter 3.50 deprecated the bundled Material/Cupertino libraries;
+  # the UI imports use the standalone package (official migration path).
+  material_ui: ^1.0.0
   # Git refs are pinned to commit SHAs (receipt philosophy): a floating
   # `main` makes CI non-reproducible and lets upstream drift break the build.
   nepal_admin_api:

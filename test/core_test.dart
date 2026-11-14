@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nepal_admin_api/nepal_admin_api.dart';
-import 'package:nepali_date/nepali_date.dart';
 import 'package:nepali_date_data/nepali_date_data.dart';
 
 void main() {
