@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ui/home_page.dart';
@@ -15,12 +15,10 @@ class NWeatherApp extends StatelessWidget {
     return MaterialApp(
       title: 'nWeather',
       theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0E7490)),
+                colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0E7490)),
       ),
       darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
+                brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0E7490),
           brightness: Brightness.dark,
