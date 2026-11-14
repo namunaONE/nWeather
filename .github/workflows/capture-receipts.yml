@@ -2,6 +2,7 @@ name: capture-receipts
 
 on:
   pull_request:
+    types: [opened, synchronize]
   push:
     branches:
       - realpoudel/hya-410-earthquake-panel-usgs-and-emsc-nepal-only
